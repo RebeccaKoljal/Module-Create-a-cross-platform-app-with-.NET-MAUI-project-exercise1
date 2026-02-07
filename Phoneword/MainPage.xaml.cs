@@ -2,11 +2,11 @@
 {
     public partial class MainPage : ContentPage
     {
-        string? translatedNumber;
         public MainPage()
         {
             InitializeComponent();
         }
+        string? translatedNumber;
         private void OnTranslate(object sender, EventArgs e)
         {
             string enteredNumber = PhoneNumberText.Text;
@@ -32,7 +32,20 @@
             "Yes",
             "No"))
             {
-                // TODO: dial the phone
+                try
+                {
+                    if (PhoneDialer.Default.IsSupported && !string.IsNullOrWhiteSpace(translatedNumber))
+                        PhoneDialer.Default.Open(translatedNumber);
+                }
+                catch (ArgumentNullException)
+                {
+                    await DisplayAlertAsync("Unable to dial", "Phone number was not valid.", "OK");
+                }
+                catch (Exception)
+                {
+                    // Other error has occurred.
+                    await DisplayAlertAsync("Unable to dial", "Phone dialing failed.", "OK");
+                }
             }
         }
     }
